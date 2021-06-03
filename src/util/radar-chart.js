@@ -1,66 +1,134 @@
-import ChartCanvas from "./drawing";
+import {merge} from "lodash";
+import ChartCanvas from "./chart-canvas";
 import {getLineOffset, getPolygonRadius} from "./math-helpers";
 
 export default class RadarChart extends ChartCanvas {
-    #posX;
-    #posY;
     #axesCount;
     #data;
 
+    #angleStep;
+    #axesLength;
+    #angleOffset;
+    #scaleFactor;
+
     #config = {
-        ticks: 4,
-        stepSize: 80,
-        labelOffset: 10
+        position: {
+            x: undefined,
+            y: undefined
+        },
+        ticks: undefined,
+        stepSize: undefined,
+        labelOffset: 10,
+        axes: {
+            minValue: 0,
+            maxValue: undefined
+        }
     };
 
-    constructor(context, x, y, data, config) {
+    constructor(context, data, config) {
         super(context);
+        this.#config = merge(this.#config, config);
 
-        this.#posX = x;
-        this.#posY = y;
-        this.#axesCount = data.datasets[0].data.length;
+        this.#axesCount = Math.max(...data.datasets.map(set => set.data.length));
         this.#data = data;
-        this.#config = {...this.#config, ...config};
+
+        // Calculate missing config values
+        const maxSize = Math.min(context.canvas.width - 200, context.canvas.height - 100);
+        if (!this.#config.position.x)
+            this.#config.position.x = Math.floor(context.canvas.width / 2);
+        if (!this.#config.position.y)
+            this.#config.position.y = Math.floor(context.canvas.height / 2);
+        if (!this.#config.stepSize)
+            this.#config.stepSize = Math.floor(maxSize / 10);
+        if (!this.#config.axes.maxValue)
+            this.#config.axes.maxValue = Math.max(...data.datasets.map(set => Math.max(...set.data)));
+        if (!this.#config.ticks)
+            this.#config.ticks = 5;
+
+        // Calculate and store values that are used often
+        this.#angleStep = 360 / this.#axesCount;
+        this.#axesLength = getPolygonRadius(this.#axesCount, this.#config.ticks * this.#config.stepSize);
+        this.#angleOffset = 270 - this.#angleStep / 2;
+        this.#scaleFactor = 1 / (this.#config.axes.maxValue - this.#config.axes.minValue) * this.#axesLength;
     }
 
+    /**
+     * Draws the chart onto the canvas.
+     */
     draw() {
-        this.#drawTicks(this.#axesCount, this.#config.ticks, this.#config.stepSize);
-        this.#drawAxes(this.#axesCount, this.#config.ticks * this.#config.stepSize);
-        this.#drawLabels(this.#axesCount, this.#config.ticks * this.#config.stepSize);
+        this.#drawTicks(this.#config.ticks, this.#config.stepSize);
+        this.#drawAxes();
+        this.#drawLabels(this.#config.labelOffset);
+
+        for (const dataset of this.#data.datasets) {
+            this.#drawDataset(dataset);
+        }
     }
 
-    #drawTicks(axesCount, steps, stepSize) {
+    /**
+     * Draws the tick rings of the chart.
+     * @param steps The number of ticks to draw
+     * @param stepSize The spacing in between the ticks
+     */
+    #drawTicks(steps, stepSize) {
+        this.beginPath();
         for (let i = 0; i < steps; i++) {
-            this.drawPolygon(this.#posX, this.#posY, stepSize * (i + 1), axesCount);
+            this.drawPolygon(this.#config.position.x, this.#config.position.y, stepSize * (i + 1), this.#axesCount);
         }
+        this.closePath();
     }
 
-    #drawAxes(count, edgeLength) {
-        const angleStep = 360 / count;
-        const lineLength = getPolygonRadius(count, edgeLength);
-        const angleOffset = 270 - angleStep / 2;
-
-        for (let i = 0; i < count; i++) {
-            const {x, y} = getLineOffset(angleOffset + angleStep * i, lineLength);
-            this.drawLine(this.#posX, this.#posY, this.#posX + x, this.#posY + y);
+    /**
+     * Draws the chart axes.
+     */
+    #drawAxes() {
+        this.beginPath()
+        for (let i = 0; i < this.#axesCount; i++) {
+            const {x, y} = getLineOffset(this.#angleOffset + this.#angleStep * i, this.#axesLength);
+            this.drawLine(this.#config.position.x, this.#config.position.y, this.#config.position.x + x, this.#config.position.y + y);
         }
+        this.closePath();
     }
 
-    #drawLabels(axesCount, edgeLength) {
-        const angleStep = 360 / axesCount;
-        const axesLength = getPolygonRadius(axesCount, edgeLength);
-        const angleOffset = 270 - angleStep / 2;
-
-        for (let i = 0; i < axesCount; i++) {
-            const {x, y} = getLineOffset(angleOffset + angleStep * i, axesLength + this.#config.labelOffset);
+    /**
+     * Draws the axis labels of the chart.
+     * @param offset The spacing in between the axes' end and the labels
+     */
+    #drawLabels(offset) {
+        for (let i = 0; i < this.#axesCount; i++) {
+            const {x, y} = getLineOffset(this.#angleOffset + this.#angleStep * i, this.#axesLength + offset);
 
             let align = "left";
-            if (i === 0 || i > axesCount / 2)
+            if (i === 0 || i > this.#axesCount / 2)
                 align = "right";
-            if (axesCount % 2 === 1 && i === Math.ceil(axesCount / 2))
+            if (this.#axesCount % 2 === 1 && i === Math.ceil(this.#axesCount / 2))
                 align = "center";
 
-            this.drawLabel(this.#posX + x, this.#posY + y, this.#data.labels[i] ?? "", align);
+            this.drawLabel(this.#config.position.x + x, this.#config.position.y + y, this.#data.labels[i] ?? "", align);
         }
+    }
+
+    /**
+     * Draws a dataset onto the chart.
+     * @param dataset The dataset to draw
+     */
+    #drawDataset(dataset) {
+        this.setStrokeStyle(dataset.color);
+
+        const {x: startX, y: startY} = getLineOffset(this.#angleOffset, dataset.data[0] * this.#scaleFactor);
+
+        const region = new Path2D();
+        region.moveTo(this.#config.position.x + startX, this.#config.position.y + startY);
+
+        for (let i = 1; i < this.#axesCount; i++) {
+            const displayValue = (dataset.data[i] ?? 0) * this.#scaleFactor;
+            const {x, y} = getLineOffset(this.#angleOffset + this.#angleStep * i, displayValue);
+
+            region.lineTo(this.#config.position.x + x, this.#config.position.y + y);
+        }
+
+        region.lineTo(this.#config.position.x + startX, this.#config.position.y + startY);
+        region.closePath();
+        this.drawShape(region, dataset.color + "55", 2, dataset.color);
     }
 }

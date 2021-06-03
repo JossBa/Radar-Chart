@@ -10,6 +10,9 @@ export default class ChartCanvas {
      */
     constructor(context) {
         this.#context = context;
+
+        // Set font settings for drawing text
+        this.#context.font = "18px sans-serif";
     }
 
     /**
@@ -57,8 +60,55 @@ export default class ChartCanvas {
         this.#context.stroke();
     }
 
+    /**
+     * Draws text at the given position of the canvas.
+     * @param x The x-coordinate of the text
+     * @param y The y-coordinate of the text
+     * @param text The text to draw
+     * @param align The alignment of the text (may be left, center, right, start or end)
+     */
     drawLabel(x, y, text, align) {
         this.#context.textAlign = align;
         this.#context.fillText(text, x, y);
+    }
+
+    /**
+     * Sets the stroke style of the canvas.
+     * @param color The color to use (may be any CSS color string, a CanvasGradient or a CanvasPattern)
+     */
+    setStrokeStyle(color) {
+        this.#context.strokeStyle = color;
+    }
+
+    /**
+     * Creates a new path on the canvas.
+     */
+    beginPath() {
+        this.#context.beginPath();
+    }
+
+    /**
+     * Closes the active path on the canvas.
+     */
+    closePath() {
+        this.#context.closePath();
+    }
+
+    /**
+     * Draws a shape based on the path provided.
+     * @param path The path of the shape's outline
+     * @param color The fill color of the shape
+     * @param strokeWeight The stroke weight of the shape's outline. Leave undefined for no outline.
+     * @param strokeColor The color of the shape's outline
+     */
+    drawShape(path, color, strokeWeight, strokeColor) {
+        this.#context.fillStyle = color;
+        this.#context.fill(path);
+
+        if (!strokeWeight) return;
+
+        this.#context.lineWidth = strokeWeight;
+        this.#context.strokeStyle = strokeColor;
+        this.#context.stroke(path);
     }
 }

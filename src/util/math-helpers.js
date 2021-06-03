@@ -1,11 +1,20 @@
 /**
- * Calculates an approximation of the outer radius of a polygon.
+ * Calculates the cosecant of a number x.
+ * @param x A number (given in radians)
+ * @returns {number} The cosecant of the given number
+ */
+function csc(x) {
+    return 1 / Math.sin(x);
+}
+
+/**
+ * Calculates the outer radius of a polygon.
  * @param edgeCount The number of edges of the polygon
  * @param edgeLength The length of the polygon's edges
  * @returns {number} The radius of the polygon
  */
 export function getPolygonRadius(edgeCount, edgeLength) {
-    return (0.2997 * edgeCount + 0.2108) / 2 * edgeLength;
+    return edgeLength / 2 * csc(Math.PI / edgeCount);
 }
 
 /**

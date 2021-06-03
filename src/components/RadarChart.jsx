@@ -6,16 +6,21 @@ export default class RadarChart extends Component {
         super(props);
 
         this.state = {
+            chartConfig: {
+                axes: {
+                    maxValue: 10
+                }
+            },
             chartData: {
                 labels: ["Value 1", "Value 2", "Value 3", "Value 4", "Value 5", "Value 6"],
                 datasets: [
                     {
-                        data: [3, 5, 2, 4, 6, 2],
-                        color: "#aa0000"
+                        data: [6, 5, 8, 4, 3, 7],
+                        color: "#ff0000"
                     },
                     {
-                        data: [3, 5, 2, 4, 6, 3],
-                        color: "#00aa00"
+                        data: [4, 7, 5, 6, 9, 6],
+                        color: "#0000ff"
                     }
                 ]
             }
@@ -26,7 +31,7 @@ export default class RadarChart extends Component {
         const canvas = document.querySelector(".radar-chart > canvas");
         const ctx = canvas.getContext("2d");
 
-        new Chart(ctx, 400, 400, this.state.chartData).draw();
+        new Chart(ctx, this.state.chartData, this.state.chartConfig).draw();
     }
 
     render() {
