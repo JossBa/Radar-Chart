@@ -11,3 +11,52 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.carBoxContainer {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.carCardsContainer {
+  margin: 30px 10px;
+  padding: 20px;
+  background-color: azure;
+  width: 90%;
+  display: flex;
+  justify-content: start;
+}
+
+.carComparisonBox {
+  color: #282c34;
+  background-color: aliceblue;
+  min-width: 400px;
+  min-height: 280px;
+  margin: 10px 20px;
+  padding: 20px;
+  border-radius: 2%;
+}
+
+.carDetailHeader {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.carDetailHeader > img {
+  width: 80px;
+  height: auto;
+}
+
+.carDetailList {
+  list-style-type: none;
+  text-align: left;
+}
+
+.carDetailList > li {
+  font-size: small;
+}
+
+.deleteButton > img {
+  width: 50px;
+  height: auto;
+}

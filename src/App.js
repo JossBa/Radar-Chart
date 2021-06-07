@@ -1,6 +1,7 @@
 import './App.css';
 import React, {Component} from "react";
-import CarDetail from "./components/CarDetail";
+import CarCardContainer from "./components/CarCardContainer";
+import CarComparisonContainer from "./components/CarComparisonContainer";
 
 class App extends Component {
     constructor() {
@@ -18,8 +19,11 @@ class App extends Component {
         return (
             <div className="App">
                 <header className="App-header">
-                    <p> Hellooooo { this.state.cars.map(c => c.car).join(",\n") || ""} </p>
-                    <CarDetail carName="VW Käfer" />
+                    <div className="carBoxContainer">
+                        <CarComparisonContainer title="Car Model A"/>
+                        <CarComparisonContainer title="Car Model B"/>
+                    </div>
+                    <CarCardContainer/>
                 </header>
             </div>
         );
