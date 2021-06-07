@@ -26,7 +26,6 @@ class CarDetail extends Component {
                     <li>Weight: { carToDisplay.weight }</li>
                     <li>Acceleration: { carToDisplay.acceleration }</li>
                     <li>Origin: { carToDisplay.origin }</li>
-
                 </ul>
             </div>
         )

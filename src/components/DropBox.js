@@ -49,10 +49,11 @@ class DropBox extends Component {
     handleOnDrop = (e) => {
         e.preventDefault();
         e.target.style.backgroundColor = "white"
-
         const data = e.dataTransfer.getData("car-model");
+
         console.log("data: " + data)
         const carToDisplay = this.state.cars.find(car => car.id === data)
+
         this.setState({carToDisplay: carToDisplay})
         console.log("car to display: " + carToDisplay)
 
