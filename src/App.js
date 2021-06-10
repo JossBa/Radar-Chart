@@ -24,9 +24,14 @@ class App extends Component {
     async componentDidMount() {
         const carsData = await fetch("cars.json");
         const cars = await carsData.json();
+        let index = 0;
+        for(const car of cars) {
+            car.carId = index;
+            index++;
+        }
         this.setState({cars: cars});
+
         this.setState({normalizedCars: this.normalizeCarData(cars)});
-        console.log(new Set(cars.map(c => c.manufacturer)))
     }
 
     // mpg, cylinders, displacement, horsepower, weight, acceleration
@@ -50,14 +55,16 @@ class App extends Component {
         }
 
         const cars = [];
+        let index = 0;
         for (const car of data) {
             const normalizedCar = {
+                carId: index,
                 car: car.car,
                 manufacturer: car.manufacturer,
                 modelYear: car.modelYear,
                 origin: car.origin
             };
-
+            index++;
             for (const prop of this.state.labels) {
                 if (car[prop] === null)
                     normalizedCar[prop] = 0;
@@ -67,7 +74,6 @@ class App extends Component {
 
             cars.push(normalizedCar);
         }
-
         return cars;
     }
 

@@ -8,7 +8,6 @@ class CarCardContainer extends Component {
     }
 
     componentDidMount() {
-        console.log("cars: " , this.props.cars)
         this.setState({ cars: this.props.cars } )
     }
 
@@ -50,7 +49,7 @@ class CarCardContainer extends Component {
                 </div>
                 <div className="carList">
                     {this.getFilteredCars().map((car, index) =>
-                        <CarCard  key={ index } id={index} modelName={car.car} manufacturer={car.manufacturer}/>
+                        <CarCard  key={ index } id={index} modelName={car.car} manufacturer={car.manufacturer} carNumber={car.carId}/>
                     )}
                 </div>
 

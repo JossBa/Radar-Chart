@@ -13,7 +13,7 @@ class DropBox extends Component {
         e.preventDefault();
         e.target.style.backgroundColor = "#d8e1ff"
         const id = e.dataTransfer.getData("car-model");
-        console.log(id)
+        console.log("carId from target: ", id)
         if(id === undefined || id === "") return
         this.setState({carToDisplay: this.props.cars[id]});
         this.props.updateCarHandler(id);
