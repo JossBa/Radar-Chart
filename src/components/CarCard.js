@@ -4,7 +4,6 @@ import {Component} from "react";
 class CarCard extends Component {
     drag = (e) => {
         e.dataTransfer.setData("car-model", this.props.carNumber)
-        console.log(this.props.carNumber)
     }
 
     render() {

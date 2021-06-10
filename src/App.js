@@ -133,12 +133,10 @@ class App extends Component {
     }
 
     handleDeleteCarA = () => {
-        console.log("delete tapped A")
         this.setState({carAData: null}, () => this.updateChartData())
     }
 
     handleDeleteCarB = () => {
-        console.log("delete tapped B")
         this.setState({carBData: null}, () => this.updateChartData())
     }
 

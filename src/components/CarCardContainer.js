@@ -33,7 +33,6 @@ class CarCardContainer extends Component {
         if(this.state.originFilter.length > 0) {
             filteredCars = filteredCars.filter(car => this.state.originFilter.includes(car.origin))
         }
-        console.log(filteredCars.length)
         return filteredCars
     }
 
