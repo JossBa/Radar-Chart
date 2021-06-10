@@ -2,26 +2,21 @@
 import {Component} from "react";
 
 class CarCard extends Component {
-    constructor(props) {
-        super(props);
-    }
 
-    drag(e) {
-        console.log("started Dragging")
-        console.log(e.target)
-        e.dataTransfer.setData("car-model", e.target.id)
-        console.log("target id: " + e.target.id)
+    drag = (e) => {
+        e.dataTransfer.setData("car-model", this.props.id)
     }
 
     render() {
         return (
             <div
-                id={this.props.number}
-                style={{backgroundColor: this.props.color}}
+                className="carCard"
                 draggable={true}
                 onDragStart={this.drag}
             >
-                <p>Car Model: {this.props.number}</p>
+                <h5>{this.props.modelName}</h5>
+                <img style={{ width: "80px", height: "80px" }} alt="manufacturer logo" src={`logos/${this.props.manufacturer}.png`}/>
+                <p>{this.props.manufacturer}</p>
             </div>
         )
     }

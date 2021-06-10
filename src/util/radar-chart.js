@@ -22,18 +22,19 @@ export default class RadarChart extends ChartCanvas {
         axes: {
             minValue: 0,
             maxValue: undefined
-        }
+        },
+        color: "#000000"
     };
 
     constructor(context, data, config) {
         super(context);
         this.#config = merge(this.#config, config);
 
-        this.#axesCount = Math.max(...data.datasets.map(set => set.data.length));
+        this.#axesCount = data.datasets ? Math.max(...data.datasets.map(set => set.data.length)) : 6;
         this.#data = data;
 
         // Calculate missing config values
-        const maxSize = Math.min(context.canvas.width - 200, context.canvas.height - 100);
+        const maxSize = Math.min(context.canvas.width - 250, context.canvas.height - 100);
         if (!this.#config.position.x)
             this.#config.position.x = Math.floor(context.canvas.width / 2);
         if (!this.#config.position.y)
@@ -41,9 +42,11 @@ export default class RadarChart extends ChartCanvas {
         if (!this.#config.stepSize)
             this.#config.stepSize = Math.floor(maxSize / 10);
         if (!this.#config.axes.maxValue)
-            this.#config.axes.maxValue = Math.max(...data.datasets.map(set => Math.max(...set.data)));
+            this.#config.axes.maxValue = 1;// data.datasets ? Math.max(...data.datasets.map(set => Math.max(...set.data))) : 10;
         if (!this.#config.ticks)
             this.#config.ticks = 5;
+
+        console.log(this.#config);
 
         // Calculate and store values that are used often
         this.#angleStep = 360 / this.#axesCount;
@@ -56,12 +59,20 @@ export default class RadarChart extends ChartCanvas {
      * Draws the chart onto the canvas.
      */
     draw() {
+        super.clear();
+        this.setStrokeStyle(this.#config.color);
+        this.setFillStyle(this.#config.color);
+
         this.#drawTicks(this.#config.ticks, this.#config.stepSize);
         this.#drawAxes();
-        this.#drawLabels(this.#config.labelOffset);
 
-        for (const dataset of this.#data.datasets) {
-            this.#drawDataset(dataset);
+        if (this.#data.labels && this.#data.datasets.length !== 0) {
+            console.log("Drawing chart...", this.#data);
+            this.#drawLabels(this.#config.labelOffset);
+
+            for (const dataset of this.#data.datasets) {
+                this.#drawDataset(dataset);
+            }
         }
     }
 
@@ -95,6 +106,7 @@ export default class RadarChart extends ChartCanvas {
      * @param offset The spacing in between the axes' end and the labels
      */
     #drawLabels(offset) {
+        this.beginPath();
         for (let i = 0; i < this.#axesCount; i++) {
             const {x, y} = getLineOffset(this.#angleOffset + this.#angleStep * i, this.#axesLength + offset);
 
@@ -106,6 +118,7 @@ export default class RadarChart extends ChartCanvas {
 
             this.drawLabel(this.#config.position.x + x, this.#config.position.y + y, this.#data.labels[i] ?? "", align);
         }
+        this.closePath();
     }
 
     /**

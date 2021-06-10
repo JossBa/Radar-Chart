@@ -1,31 +1,31 @@
 // Detail View of Car Model for Comparison
 import {Component} from "react";
-import vw from "../assets/vw.png";
+
+import {convertMPGToKm, round} from "../util/math-helpers";
 
 class CarDetail extends Component {
-    constructor(props) {
-        super(props);
+    capitalize = (e) => {
+        return e.substring(0,1).toUpperCase() + e.substring(1)
     }
-
     render() {
         const {carToDisplay} = this.props
 
         return(
             <div>
                 <div className="carDetailHeader">
-                    <img src={vw}/>
-                    <h2>{ carToDisplay.model }</h2>
+                    <img alt="manufacturer logo" src={`logos/${carToDisplay.manufacturer}.png`}/>
+                    <h4 style={{ textTransform: "capitalize", paddingLeft: "10px" }}>{ carToDisplay.car }</h4>
                 </div>
                 <ul className="carDetailList">
-                    <li>Manufacturer: { carToDisplay.manufacturer }</li>
-                    <li>Year: { carToDisplay.year } </li>
-                    <li>MPG: { carToDisplay.mpg }</li>
-                    <li>Cylinders: { carToDisplay.cylinders }</li>
-                    <li>Displacement: { carToDisplay.displacement }</li>
-                    <li>Horsepower: { carToDisplay.horsepower }</li>
-                    <li>Weight: { carToDisplay.weight }</li>
-                    <li>Acceleration: { carToDisplay.acceleration }</li>
-                    <li>Origin: { carToDisplay.origin }</li>
+                    <li><b>Hersteller:</b> { this.capitalize(carToDisplay.manufacturer) }</li>
+                    <li><b>Herkunft:</b> { carToDisplay.origin }</li>
+                    <li><b>Jahr:</b> 19{ carToDisplay.modelYear } </li>
+                    <li><b>Verbrauch:</b> { convertMPGToKm(carToDisplay.mpg)} km/l</li>
+                    <li><b>Zylinder:</b> { carToDisplay.cylinders }</li>
+                    <li><b>Hubraum:</b> { round(carToDisplay.displacement * 16.387)} ccm</li>
+                    <li><b>Pferdestärke:</b> { carToDisplay.horsepower } hp</li>
+                    <li><b>Gewicht:</b> { round(carToDisplay.weight * 0.4536)} kg</li>
+                    <li><b>Beschleunigung:</b> { carToDisplay.acceleration } seconds</li>
                 </ul>
             </div>
         )

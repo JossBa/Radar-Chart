@@ -81,6 +81,14 @@ export default class ChartCanvas {
     }
 
     /**
+     * Sets the fill style of the canvas.
+     * @param color The color to use (may be any CSS color string, a CanvasGradient or a CanvasPattern)
+     */
+    setFillStyle(color) {
+        this.#context.fillStyle = color;
+    }
+
+    /**
      * Creates a new path on the canvas.
      */
     beginPath() {
@@ -110,5 +118,12 @@ export default class ChartCanvas {
         this.#context.lineWidth = strokeWeight;
         this.#context.strokeStyle = strokeColor;
         this.#context.stroke(path);
+    }
+
+    /**
+     * Clears the canvas.
+     */
+    clear() {
+        this.#context.clearRect(0, 0, this.#context.canvas.width, this.#context.canvas.height);
     }
 }

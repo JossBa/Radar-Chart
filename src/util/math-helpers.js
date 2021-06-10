@@ -37,3 +37,11 @@ export function getLineOffset(angle, length) {
         y: slope / norm * length * yDirection
     };
 }
+
+export function convertMPGToKm(value) {
+    return round(value *  0.425144)
+}
+
+export function round(value) {
+    return Math.round(value * 100)/ 100
+}
